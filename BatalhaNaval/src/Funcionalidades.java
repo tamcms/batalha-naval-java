@@ -31,14 +31,14 @@ public class Funcionalidades {
     int pontos;
 
     /*Definindo a dificuldade*/
-    public Funcionalidades(boolean dificil){
-        if(dificil){
+    public Funcionalidades(boolean dificil) {
+        if (dificil) {
             tamanho = DIFICIL;
             tiros = 40;
             qtdBombas = 5;
 
             frota = new int[]{0, 6, 2, 2, 2, 1}; /*Define a qtd de cada navio*/
-        }else{
+        } else {
             tamanho = FACIL;
             tiros = 30;
             qtdBombas = 3;
@@ -47,7 +47,7 @@ public class Funcionalidades {
         }
 
         /*Cálculo das qtds de navios e suas partes*/
-        for(int i = 0; i < frota.length; i++){
+        for (int i = 1; i < frota.length; i++) {
             totNavios += frota[i];
             totPartes += frota[i] * (i + 1);
         }
@@ -60,14 +60,73 @@ public class Funcionalidades {
     }
 
     /*Define a posição dos navios*/
-    public boolean posicionarNavios(){
-
-        for(int i = 0; i < frota.length; i++){
-            for(int j = 0; j < frota.length; j++){
-                int linha = random.nextInt(tamanho);
-                int coluna = random.nextInt(tamanho);
+    public boolean posicionarNavios() {
+        for (int i = 1; i < frota.length; i++) {
+            for (int j = 0; j < frota[i]; j++) {
+                if (!posicionarNavio(i)) {
+                    return false;
+                }
             }
         }
         return true;
     }
+
+    private boolean posicionarNavio(int comprimento) {
+        int tentativas = 0;
+        while (tentativas < 2000) {
+            int linha = random.nextInt(tamanho);
+            int coluna = random.nextInt(tamanho);
+            boolean horizontal = random.nextBoolean();
+            tentativas++;
+
+            /*Condição para verificar se o navio cabe na matriz*/
+            if (horizontal && coluna + comprimento > tamanho) {
+                continue;
+            }
+            if (!horizontal && linha + comprimento > tamanho) {
+                continue;
+            }
+
+            boolean livre = true;
+            for (int parte = 0; parte < comprimento; parte++) {
+                int l = linha + (horizontal ? 0 : parte);
+                int c = coluna + (horizontal ? parte : 0);
+
+                if (navios[l][c]) {
+                    livre = false;
+                    break;
+                }
+            }
+            /*Posicionar o navio*/
+            if (livre) {
+                for (int parte = 0; parte < comprimento; parte++) {
+                    int l = linha + (horizontal ? 0 : parte);
+                    int c = coluna + (horizontal ? parte : 0);
+                    navios[l][c] = true;
+                    tamanhoNavio[l][c] = comprimento;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    /*Tiros*/
+    public boolean atirar(int linha,int coluna){
+        if (linha < 0 || linha >= tamanho || coluna < 0 || coluna >= tamanho) {
+            return false;
+        }
+        if (atirado[linha][coluna]) {
+            return false;
+        }
+        atirado[linha][coluna] = true;
+        tirosUsados++;
+
+        if (navios[linha][coluna]) {
+            acertos++;
+            pontos += PONTOS_ACERTO;
+            return true;
+        }
+      return false;
+    }
+
 }
