@@ -111,7 +111,7 @@ public class Funcionalidades {
         return false;
     }
     /*Tiros*/
-    public boolean atirar(int linha,int coluna){
+    public boolean atirar(int linha,int coluna) {
         if (linha < 0 || linha >= tamanho || coluna < 0 || coluna >= tamanho) {
             return false;
         }
@@ -126,7 +126,6 @@ public class Funcionalidades {
             pontos += PONTOS_ACERTO;
             return true;
         }
-      return false;
+        return false;
     }
-
 }
